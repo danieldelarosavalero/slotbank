@@ -2,30 +2,38 @@ import { supabase } from '../lib/supabase'
 import Link from 'next/link'
 
 export default async function Home() {
-  const { data: cartera } = await supabase
+  const { data: cartera, error: errorCartera } = await supabase
     .from('carteras')
     .select('*')
     .single()
 
-  const { data: activos } = await supabase
+  const { data: activos, error: errorActivos } = await supabase
     .from('activos')
     .select('*')
 
-  const { data: movimientos } = await supabase
+  const { data: movimientos, error: errorMovimientos } = await supabase
     .from('movimientos')
     .select('*')
     .order('fecha', { ascending: false })
 
   return (
     <main className="min-h-screen bg-gray-950 text-white p-8">
-      
+
+      {/* Debug temporal */}
+      <div className="bg-red-900 rounded-xl p-4 mb-6 text-sm">
+        <p>Error cartera: {errorCartera ? errorCartera.message : 'ninguno'}</p>
+        <p>Error activos: {errorActivos ? errorActivos.message : 'ninguno'}</p>
+        <p>Error movimientos: {errorMovimientos ? errorMovimientos.message : 'ninguno'}</p>
+        <p>Cartera: {cartera ? JSON.stringify(cartera) : 'null'}</p>
+      </div>
+
       {/* Header */}
       <div className="mb-10">
         <h1 className="text-4xl font-bold text-emerald-400">SlotBank</h1>
         <p className="text-gray-400 mt-1">Panel de inversión inteligente</p>
       </div>
 
-        {/* Botón simulador */}
+      {/* Botón simulador */}
       <div className="mb-8">
         <Link href="/simulador" className="bg-emerald-500 hover:bg-emerald-400 text-black font-semibold px-6 py-3 rounded-xl transition-colors">
           Abrir simulador de ahorro →
@@ -93,4 +101,4 @@ export default async function Home() {
 
     </main>
   )
-}
+} 
