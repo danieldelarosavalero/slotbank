@@ -21,14 +21,6 @@ export default async function Home() {
   return (
     <main className="min-h-screen bg-gray-950 text-white p-8">
 
-      {/* Debug temporal */}
-      <div className="bg-red-900 rounded-xl p-4 mb-6 text-sm">
-        <p>Error cartera: {errorCartera ? errorCartera.message : 'ninguno'}</p>
-        <p>Error activos: {errorActivos ? errorActivos.message : 'ninguno'}</p>
-        <p>Error movimientos: {errorMovimientos ? errorMovimientos.message : 'ninguno'}</p>
-        <p>Cartera: {cartera ? JSON.stringify(cartera) : 'null'}</p>
-      </div>
-
       {/* Header */}
       <div className="mb-10">
         <h1 className="text-4xl font-bold text-emerald-400">SlotBank</h1>
