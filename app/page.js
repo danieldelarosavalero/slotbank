@@ -2,10 +2,12 @@ import { supabase } from '../lib/supabase'
 import Link from 'next/link'
 
 export default async function Home() {
-  const { data: cartera, error: errorCartera } = await supabase
+  const { data: carteras, error: errorCartera } = await supabase
     .from('carteras')
     .select('*')
-    .single()
+    .limit(1)
+
+  const cartera = carteras?.[0]
 
   const { data: activos, error: errorActivos } = await supabase
     .from('activos')
