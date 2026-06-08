@@ -2,11 +2,14 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { supabase } from '../../lib/supabase'
 
 export default function Simulador() {
   const [aportacion, setAportacion] = useState(200)
   const [anos, setAnos] = useState(10)
   const [rentabilidad, setRentabilidad] = useState(7)
+  const [guardado, setGuardado] = useState(false)
+  const [guardando, setGuardando] = useState(false)
 
   const calcular = () => {
     const meses = anos * 12
@@ -21,6 +24,25 @@ export default function Simulador() {
   const totalInvertido = aportacion * anos * 12
   const totalFinal = calcular()
   const ganancias = totalFinal - totalInvertido
+
+  const guardarSimulacion = async () => {
+    setGuardando(true)
+    const { error } = await supabase
+      .from('simulaciones')
+      .insert({
+        aportacion_mensual: aportacion,
+        anos: anos,
+        rentabilidad: rentabilidad,
+        total_invertido: totalInvertido,
+        patrimonio_final: totalFinal
+      })
+
+    if (!error) {
+      setGuardado(true)
+      setTimeout(() => setGuardado(false), 3000)
+    }
+    setGuardando(false)
+  }
 
   return (
     <main className="min-h-screen bg-gray-950 text-white p-8">
@@ -45,17 +67,13 @@ export default function Simulador() {
             <span className="text-emerald-400 font-bold">{aportacion}€</span>
           </div>
           <input
-            type="range"
-            min="50"
-            max="2000"
-            step="50"
+            type="range" min="50" max="2000" step="50"
             value={aportacion}
             onChange={(e) => setAportacion(Number(e.target.value))}
             className="w-full accent-emerald-400"
           />
           <div className="flex justify-between text-gray-600 text-xs mt-1">
-            <span>50€</span>
-            <span>2.000€</span>
+            <span>50€</span><span>2.000€</span>
           </div>
         </div>
 
@@ -66,40 +84,41 @@ export default function Simulador() {
             <span className="text-emerald-400 font-bold">{anos} años</span>
           </div>
           <input
-            type="range"
-            min="1"
-            max="40"
-            step="1"
+            type="range" min="1" max="40" step="1"
             value={anos}
             onChange={(e) => setAnos(Number(e.target.value))}
             className="w-full accent-emerald-400"
           />
           <div className="flex justify-between text-gray-600 text-xs mt-1">
-            <span>1 año</span>
-            <span>40 años</span>
+            <span>1 año</span><span>40 años</span>
           </div>
         </div>
 
         {/* Rentabilidad */}
-        <div className="mb-2">
+        <div className="mb-6">
           <div className="flex justify-between mb-2">
             <label className="text-gray-400">Rentabilidad anual estimada</label>
             <span className="text-emerald-400 font-bold">{rentabilidad}%</span>
           </div>
           <input
-            type="range"
-            min="1"
-            max="15"
-            step="0.5"
+            type="range" min="1" max="15" step="0.5"
             value={rentabilidad}
             onChange={(e) => setRentabilidad(Number(e.target.value))}
             className="w-full accent-emerald-400"
           />
           <div className="flex justify-between text-gray-600 text-xs mt-1">
-            <span>1% (conservador)</span>
-            <span>15% (agresivo)</span>
+            <span>1% (conservador)</span><span>15% (agresivo)</span>
           </div>
         </div>
+
+        {/* Botón guardar */}
+        <button
+          onClick={guardarSimulacion}
+          disabled={guardando}
+          className="w-full bg-emerald-500 hover:bg-emerald-400 disabled:bg-gray-700 text-black font-semibold py-3 rounded-xl transition-colors"
+        >
+          {guardando ? 'Guardando...' : guardado ? '✓ Simulación guardada en tu cartera' : 'Guardar simulación en mi cartera'}
+        </button>
       </div>
 
       {/* Resultados */}

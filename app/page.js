@@ -18,6 +18,11 @@ export default async function Home() {
     .select('*')
     .order('fecha', { ascending: false })
 
+  const { data: simulaciones } = await supabase
+    .from('simulaciones')
+    .select('*')
+    .order('fecha', { ascending: false })  
+
   return (
     <main className="min-h-screen bg-gray-950 text-white p-8">
 
@@ -92,7 +97,30 @@ export default async function Home() {
           ))}
         </div>
       </div>
-
+{/* Simulaciones guardadas */}
+      {simulaciones && simulaciones.length > 0 && (
+        <div className="mt-8">
+          <h3 className="text-xl font-semibold mb-4 text-white">Simulaciones guardadas</h3>
+          <div className="bg-gray-900 rounded-xl border border-gray-800 overflow-hidden">
+            <div className="grid grid-cols-4 p-4 border-b border-gray-800 text-gray-500 text-sm">
+              <span>Aportación/mes</span>
+              <span>Años</span>
+              <span>Rentabilidad</span>
+              <span>Patrimonio final</span>
+            </div>
+            {simulaciones.map((sim, index) => (
+              <div key={sim.id} className={`grid grid-cols-4 p-4 ${index !== simulaciones.length - 1 ? 'border-b border-gray-800' : ''}`}>
+                <span className="text-white">{sim.aportacion_mensual}€/mes</span>
+                <span className="text-gray-400">{sim.anos} años</span>
+                <span className="text-gray-400">{sim.rentabilidad}%</span>
+                <span className="text-emerald-400 font-semibold">
+                  {Number(sim.patrimonio_final).toLocaleString('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 })}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </main>
   )
 } 
